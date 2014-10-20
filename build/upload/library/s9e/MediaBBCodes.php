@@ -14,10 +14,37 @@ class s9e_MediaBBCodes
 
 	public static function install($old, $new, $addon)
 	{
-		$exclude = XenForo_Application::get('options')->s9e_EXCLUDE_SITES;
-		$custom  = class_exists('s9e_Custom');
+		self::filterExcludedSites($addon);
+		self::injectCustomRenderers($addon);
+	}
 
-		if (!$exclude && !$custom)
+	public static function injectCustomRenderers($addon)
+	{
+		$custom  = class_exists('s9e_Custom');
+		if (!$custom)
+		{
+			return;
+		}
+
+		foreach ($addon->bb_code_media_sites->site as $site)
+		{
+			$id = (string) $site['media_site_id'];
+			$callback = 's9e_Custom::' . $id;
+
+			if (is_callable($callback))
+			{
+				$site->embed_html = '<!-- ' . $callback . "() -->\n" . $site->embed_html;
+
+				$site['embed_html_callback_class']  = 's9e_MediaBBCodes';
+				$site['embed_html_callback_method'] = 'embed';
+			}
+		}
+	}
+
+	protected static function filterExcludedSites($addon)
+	{
+		$exclude = XenForo_Application::get('options')->s9e_EXCLUDE_SITES;
+		if (!$exclude)
 		{
 			return;
 		}
@@ -32,17 +59,6 @@ class s9e_MediaBBCodes
 			if (isset($exclude[$id]))
 			{
 				$nodes[] = dom_import_simplexml($site);
-				continue;
-			}
-
-			$callback = 's9e_Custom::' . $id;
-
-			if ($custom && is_callable($callback))
-			{
-				$site->embed_html = '<!-- ' . $callback . "() -->\n" . $site->embed_html;
-
-				$site['embed_html_callback_class']  = 's9e_MediaBBCodes';
-				$site['embed_html_callback_method'] = 'embed';
 			}
 		}
 
@@ -52,7 +68,12 @@ class s9e_MediaBBCodes
 		}
 	}
 
-	public static function reinstall()
+	public static function updateTags($tags)
+	{
+		return $tags;
+	}
+
+	protected static function reinstall()
 	{
 		$model = XenForo_Model::create('XenForo_Model_BbCode');
 		$model->deleteBbCodeMediaSitesForAddOn('s9e');

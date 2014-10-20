@@ -43,10 +43,37 @@ class s9e_MediaBBCodes
 
 	public static function install($old, $new, $addon)
 	{
-		$exclude = XenForo_Application::get('options')->s9e_EXCLUDE_SITES;
-		$custom  = class_exists('s9e_Custom');
+		self::filterExcludedSites($addon);
+		self::injectCustomRenderers($addon);
+	}
 
-		if (!$exclude && !$custom)
+	public static function injectCustomRenderers($addon)
+	{
+		$custom  = class_exists('s9e_Custom');
+		if (!$custom)
+		{
+			return;
+		}
+
+		foreach ($addon->bb_code_media_sites->site as $site)
+		{
+			$id = (string) $site['media_site_id'];
+			$callback = 's9e_Custom::' . $id;
+
+			if (is_callable($callback))
+			{
+				$site->embed_html = '<!-- ' . $callback . "() -->\n" . $site->embed_html;
+
+				$site['embed_html_callback_class']  = 's9e_MediaBBCodes';
+				$site['embed_html_callback_method'] = 'embed';
+			}
+		}
+	}
+
+	protected static function filterExcludedSites($addon)
+	{
+		$exclude = XenForo_Application::get('options')->s9e_EXCLUDE_SITES;
+		if (!$exclude)
 		{
 			return;
 		}
@@ -61,17 +88,6 @@ class s9e_MediaBBCodes
 			if (isset($exclude[$id]))
 			{
 				$nodes[] = dom_import_simplexml($site);
-				continue;
-			}
-
-			$callback = 's9e_Custom::' . $id;
-
-			if ($custom && is_callable($callback))
-			{
-				$site->embed_html = '<!-- ' . $callback . "() -->\n" . $site->embed_html;
-
-				$site['embed_html_callback_class']  = 's9e_MediaBBCodes';
-				$site['embed_html_callback_method'] = 'embed';
 			}
 		}
 
@@ -81,7 +97,12 @@ class s9e_MediaBBCodes
 		}
 	}
 
-	public static function reinstall()
+	public static function updateTags($tags)
+	{
+		return $tags;
+	}
+
+	protected static function reinstall()
 	{
 		$model = XenForo_Model::create('XenForo_Model_BbCode');
 		$model->deleteBbCodeMediaSitesForAddOn('s9e');
@@ -410,6 +431,7 @@ $rows[] = '<tbody>';
 $sitenames   = [];
 $examples    = [];
 $optionNames = [];
+$tags        = [];
 
 $parentNode = $addon->appendChild($dom->createElement('bb_code_media_sites'));
 foreach (glob($sitesDir . '/*.xml') as $siteFile)
@@ -426,6 +448,16 @@ foreach (glob($sitesDir . '/*.xml') as $siteFile)
 	$node->setAttribute('site_url',       $site['homepage']);
 	$node->setAttribute('match_is_regex', '1');
 	$node->setAttribute('supported',      '1');
+
+	if (isset($site->tags->tag))
+	{
+		$siteTags = [];
+		foreach ($site->tags->tag as $tag)
+		{
+			$siteTags[] = $tags[] = (string) $tag;
+		}
+		$node->setAttribute('s9e_media_tags', implode(',', $siteTags));
+	}
 
 	preg_match_all('/(?<=@)\\w+/', $template, $matches);
 	$attrNames = array_unique($matches[0]);
@@ -786,7 +818,7 @@ $optionNames['EXCLUDE_SITES'] = $addonId . '_EXCLUDE_SITES';
 // Add the params as XenForo options
 ksort($optionNames);
 
-$i = 0;
+$displayOrder = 0;
 foreach ($optionNames as $paramName => $optionName)
 {
 	$option = $optiongroups->appendChild($dom->createElement('option'));
@@ -805,7 +837,7 @@ foreach ($optionNames as $paramName => $optionName)
 		$option->appendChild($dom->createElement('relation')),
 		[
 			'group_id'      => $addon->getAttribute('addon_id'),
-			'display_order' => ++$i
+			'display_order' => ++$displayOrder
 		]
 	);
 
@@ -827,6 +859,39 @@ foreach ($optionNames as $paramName => $optionName)
 		]
 	);
 }
+
+// Add media site tags
+$option = $optiongroups->appendChild($dom->createElement('option'));
+setAttributes(
+	$option,
+	[
+		'option_id'         => 's9e_media_tags',
+		'edit_format'       => 'checkbox',
+		'data_type'         => 'array',
+		'can_backup'        => 1,
+		'validation_class'  => $className,
+		'validation_method' => 'updateTags'
+	]
+);
+
+$tags = array_fill_keys($tags, 1);
+ksort($tags);
+$lines = [];
+foreach (array_keys($tags) as $tag)
+{
+	$lines[] = $tag . '=' . ucfirst($tag);
+}
+
+$option->appendChild($dom->createElement('default_value', serialize($tags)));
+$option->appendChild($dom->createElement('edit_format_params', implode("\n", $lines)));
+$option->appendChild($dom->createElement('sub_options', '*'));
+setAttributes(
+	$option->appendChild($dom->createElement('relation')),
+	[
+		'group_id'      => $addon->getAttribute('addon_id'),
+		'display_order' => ++$displayOrder
+	]
+);
 
 // Add the attribution link
 if (isset($linkText))
