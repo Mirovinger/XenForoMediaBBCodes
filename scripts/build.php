@@ -9,15 +9,16 @@ include_once __DIR__ . '/../vendor/s9e/TextFormatter/src/autoloader.php';
 
 if (!isset($addonId))
 {
-	$sitesDir   = __DIR__ . '/../vendor/s9e/TextFormatter/src/Plugins/MediaEmbed/Configurator/sites';
-	$classFile  = __DIR__ . '/../build/upload/library/s9e/MediaBBCodes.php';
-	$addonFile  = __DIR__ . '/../build/addon-s9e.xml';
-	$addonId    = 's9e';
-	$namespace  = 's9e';
-	$className  = 's9e_MediaBBCodes';
-	$addonTitle = 's9e Media Pack';
-	$addonUrl   = 'https://github.com/s9e/XenForoMediaBBCodes';
-//	$linkText   = 'Media embeds powered by s9e';
+	$sitesDir    = __DIR__ . '/../vendor/s9e/TextFormatter/src/Plugins/MediaEmbed/Configurator/sites';
+	$classFile   = __DIR__ . '/../build/upload/library/s9e/MediaBBCodes.php';
+	$addonFile   = __DIR__ . '/../build/addon-s9e.xml';
+	$addonId     = 's9e';
+	$namespace   = 's9e';
+	$className   = 's9e_MediaBBCodes';
+	$addonTitle  = 's9e Media Pack';
+	$addonUrl    = 'https://github.com/s9e/XenForoMediaBBCodes';
+//	$linkText    = 'Media embeds powered by s9e';
+	$tagsDescUrl = 'http://s9e.github.io/XenForoMediaBBCodes/tags.html';
 }
 
 $configurator = new s9e\TextFormatter\Configurator;
@@ -807,6 +808,29 @@ setAttributes(
 	$phrases->appendChild($dom->createElement('phrase', 'Variables used in some embedded media')),
 	[
 		'title'          => 'option_group_' . $addonId . '_description',
+		'version_id'     => '1',
+		'version_string' => '1'
+	]
+);
+
+setAttributes(
+	$phrases->appendChild($dom->createElement('phrase', 'Categories of media sites to install')),
+	[
+		'title'          => 'option_' . $addonId . '_media_tags',
+		'version_id'     => '1',
+		'version_string' => '1'
+	]
+);
+
+$text = '';
+if (isset($tagsDescUrl))
+{
+	$text = '<a href="' . $tagsDescUrl . '" target="_blank">List of optional sites enabled by each category</a>';
+}
+setAttributes(
+	$phrases->appendChild($dom->createElement('phrase', $text)),
+	[
+		'title'          => 'option_' . $addonId . '_media_tags_explain',
 		'version_id'     => '1',
 		'version_string' => '1'
 	]

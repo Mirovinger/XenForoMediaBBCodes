@@ -408,6 +408,8 @@ sports=Sports</edit_format_params>
   <phrases>
     <phrase title="option_group_s9e" version_id="1" version_string="1">s9e Media Pack</phrase>
     <phrase title="option_group_s9e_description" version_id="1" version_string="1">Variables used in some embedded media</phrase>
+    <phrase title="option_s9e_media_tags" version_id="1" version_string="1">Categories of media sites to install</phrase>
+    <phrase title="option_s9e_media_tags_explain" version_id="1" version_string="1">&lt;a href="http://s9e.github.io/XenForoMediaBBCodes/tags.html" target="_blank"&gt;List of optional sites enabled by each category&lt;/a&gt;</phrase>
     <phrase title="option_s9e_AMAZON_ASSOCIATE_TAG" version_id="1" version_string="1">AMAZON_ASSOCIATE_TAG</phrase>
     <phrase title="option_s9e_AMAZON_ASSOCIATE_TAG_explain" version_id="1" version_string="1"/>
     <phrase title="option_s9e_EXCLUDE_SITES" version_id="1" version_string="1">EXCLUDE_SITES</phrase>
