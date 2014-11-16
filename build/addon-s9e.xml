@@ -44,7 +44,7 @@ sports=Sports</edit_format_params>
     <phrase title="option_s9e_media_tags" version_id="1" version_string="1">Categories of media sites to install</phrase>
     <phrase title="option_s9e_media_tags_explain" version_id="1" version_string="1">&lt;a href="http://s9e.github.io/XenForoMediaBBCodes/tags.html" target="_blank"&gt;List of optional sites enabled by each category&lt;/a&gt;</phrase>
     <phrase title="option_s9e_custom_callbacks" version_id="1" version_string="1">Custom callbacks</phrase>
-    <phrase title="option_s9e_custom_callbacks_explain" version_id="1" version_string="1">&lt;a href="https://github.com/s9e/XenForoMediaBBCodes/blob/master/docs/CustomCallbacks.md" target="_blank" style="cursor:help"&gt;Help&lt;/a&gt;</phrase>
+    <phrase title="option_s9e_custom_callbacks_explain" version_id="1" version_string="1">&lt;a href="https://github.com/s9e/XenForoMediaBBCodes/blob/RefactorGit/docs/CustomCallbacks.md" target="_blank" style="cursor:help"&gt;Help&lt;/a&gt;</phrase>
     <phrase title="option_s9e_excluded_sites" version_id="1" version_string="1">Excluded sites</phrase>
     <phrase title="option_s9e_excluded_sites_explain" version_id="1" version_string="1">Comma-separated list of sites not to install</phrase>
     <phrase title="option_s9e_AMAZON_ASSOCIATE_TAG" version_id="1" version_string="1">AMAZON_ASSOCIATE_TAG</phrase>

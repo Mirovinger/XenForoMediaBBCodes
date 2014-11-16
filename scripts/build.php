@@ -19,7 +19,7 @@ if (!isset($addonId))
 	$addonUrl    = 'https://xenforo.com/community/resources/s9e-media-bbcodes-pack.2476/';
 	$linkText    = 'Media embeds powered by s9e';
 	$tagsDescUrl = 'http://s9e.github.io/XenForoMediaBBCodes/tags.html';
-	$githubUrl   = 'https://github.com/s9e/XenForoMediaBBCodes/blob/master/docs/';
+	$githubUrl   = 'https://github.com/s9e/XenForoMediaBBCodes/blob/RefactorGit/docs/';
 }
 
 // The version is simply the current UTC day, optionally followed by the first argument given to
@@ -31,6 +31,9 @@ if (isset($_SERVER['argv'][1]))
 	$version   .= $_SERVER['argv'][1];
 	$versionId += ($_SERVER['argv'][1] === '-dev') ? -1 : (ord($_SERVER['argv'][1]) - 97);
 }
+
+$version   = '20141106-dev';
+$versionId = 201411060;
 
 // Set up the MediaEmbed plugin
 $configurator = new s9e\TextFormatter\Configurator;
